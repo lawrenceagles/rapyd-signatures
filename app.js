@@ -17,26 +17,42 @@
  */
 
 const express = require('express');
-
 const makeRequest = require('./utilities').makeRequest;
+const port = 7000;
 
 const app = express();
 
 app.set('json spaces', 4);
 
-app.listen(3000);
+app.listen(port, () => console.log(`Server running at ${port}`));
 
 app.get('/country', async (req, res) => {
 
     try {
-        const result = await makeRequest('GET', '/v1/payment_methods/country?country=it');
-    
+        const result = await makeRequest('GET', '/v1/payment_methods/country?country=US&currency=USD');
+
         res.json(result);
-      } catch (error) {
+
+    } catch (error) {
         res.json(error);
-      }
+    }
 
 })
+
+
+app.get('/countries', async (req, res) => {
+
+    try {
+        const result = await makeRequest('GET', '/v1/data/countries');
+
+        res.send(result);
+
+    } catch (error) {
+        res.json(error);
+    }
+
+})
+
 
 app.get('/payment', async (req, res) => {
 

@@ -1,14 +1,16 @@
 const https = require('https');
 const crypto = require('crypto');
-const accessKey = "";
-const secretKey = "";
+const axios = require('axios').default;
+
+const accessKey = "BFB4657FE016ADAFFE51";
+const secretKey = "14cf72f1ab2b8316e1f6bfa2dbc1d87bb6ffc67e0d300922bf7b824c64546d13b2ca31816353edb5";
 const log = false;
 
 async function makeRequest(method, urlPath, body = null) {
 
     try {
         httpMethod = method;
-        httpBaseURL = "sandboxapi.rapyd.net";
+        httpBaseURL = "https://sandboxapi.rapyd.net";
         httpURLPath = urlPath;
         salt = generateRandomString(8);
         idempotency = new Date().getTime().toString();
@@ -30,7 +32,9 @@ async function makeRequest(method, urlPath, body = null) {
             }
         }
 
-        return await httpRequest(options, body, log);
+        return await httpRequest(options);
+
+        return options
     }
     catch (error) {
         console.error("Error generating request options");
@@ -73,12 +77,29 @@ function generateRandomString(size) {
     }
 }
 
+// async function httpRequestAxios({ httpMethod, hostname, path, headers }) {
+//     try {
+//         const response = await axios({
+//             method: httpMethod,
+//             baseURL: hostname,
+//             url: path,
+//             headers
+//         });
+
+//         return response.data;
+
+//     } catch (error) {
+//         console.error(error.message);
+//         return error;
+//     }
+// }
+
 async function httpRequest(options, body) {
 
     return new Promise((resolve, reject) => {
 
         try {
-            
+
             let bodyString = "";
             if (body) {
                 bodyString = JSON.stringify(body);
@@ -109,15 +130,15 @@ async function httpRequest(options, body) {
                     return resolve(response);
                 });
             })
-            
+
             req.on('error', (error) => {
                 return reject(error);
             })
-            
+
             req.write(bodyString)
             req.end();
         }
-        catch(err) {
+        catch (err) {
             return reject(err);
         }
     })
