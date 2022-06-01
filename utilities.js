@@ -32,7 +32,7 @@ async function makeRequest(method, urlPath, body = null) {
             }
         }
 
-        return await httpRequest(options);
+        return await httpRequestAxios(options);
 
         return options
     }
@@ -77,72 +77,21 @@ function generateRandomString(size) {
     }
 }
 
-// async function httpRequestAxios({ httpMethod, hostname, path, headers }) {
-//     try {
-//         const response = await axios({
-//             method: httpMethod,
-//             baseURL: hostname,
-//             url: path,
-//             headers
-//         });
+async function httpRequestAxios({ httpMethod, hostname, path, headers }) {
+    try {
+        const response = await axios({
+            method: httpMethod,
+            baseURL: hostname,
+            url: path,
+            headers
+        });
 
-//         return response.data;
+        return response.data;
 
-//     } catch (error) {
-//         console.error(error.message);
-//         return error;
-//     }
-// }
-
-async function httpRequest(options, body) {
-
-    return new Promise((resolve, reject) => {
-
-        try {
-
-            let bodyString = "";
-            if (body) {
-                bodyString = JSON.stringify(body);
-                bodyString = bodyString == "{}" ? "" : bodyString;
-            }
-
-            log && console.log(`httpRequest options: ${JSON.stringify(options)}`);
-            const req = https.request(options, (res) => {
-                let response = {
-                    statusCode: res.statusCode,
-                    headers: res.headers,
-                    body: ''
-                };
-
-                res.on('data', (data) => {
-                    response.body += data;
-                });
-
-                res.on('end', () => {
-
-                    response.body = response.body ? JSON.parse(response.body) : {}
-                    log && console.log(`httpRequest response: ${JSON.stringify(response)}`);
-
-                    if (response.statusCode !== 200) {
-                        return reject(response);
-                    }
-
-                    return resolve(response);
-                });
-            })
-
-            req.on('error', (error) => {
-                return reject(error);
-            })
-
-            req.write(bodyString)
-            req.end();
-        }
-        catch (err) {
-            return reject(err);
-        }
-    })
-
+    } catch (error) {
+        console.error(error.message);
+        return error;
+    }
 }
 
 exports.makeRequest = makeRequest;
